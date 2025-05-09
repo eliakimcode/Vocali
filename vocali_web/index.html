@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocali</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+    <!-- header -->
+    <section id="header">
+        <div class="main-header">
+            <div class="logo-div">
+                <a aria-label="logo" href="index.html">
+                    <img class="logo" src="./new_logo.png" alt="">
+                </a>
+
+            </div>
+            <div class="nav-items">
+                <ul class="nav-menu">
+                    <li>
+                        <a href="index.html" class="nav-link active-link">Home</a>
+                    </li>
+                    <li>
+                        <a href="Admission/admission.html" class="nav-link">Translate</a>
+                    </li>
+                    <li>
+                        <a href="News/news.html" class="nav-link">About Us</a>
+                    </li>
+                    <li>
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="login.html">
+                            <i class="fa fa-login"></i> Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- ============================================
+     ================== HERO  ======================== -->
+    <section id="hero">
+        <h2 class="heading">
+            Text to Speech
+        </h2>
+
+        <label for="tts">Enter Text</label>
+        <textarea name="tts" id="tts">
+
+        </textarea>
+
+        <button type="submit" class="submit-btn" id="speaknow" title="speaknow">
+            <img src="./img/play_button.png" alt="">
+        </button>
+    </section>
+
+
+
+    <section id="speechtotext">
+        <h2 class="heading">
+            Speech to Text
+        </h2>
+
+        <label for="stt">Output Text</label>
+        <textarea name="stt" id="stt">
+
+        </textarea>
+
+        <button type="submit" id="showtext" class="submit-btn" title="showtext">
+            <img src="./img/show.png" alt="">
+        </button>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        const header = document.getElementById("header");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                header.classList.add("scrolled");
+            } else {
+                header.classList.remove("scrolled");
+            }
+        });
+    </script>
+
+
+    <script>
+        document.getElementById("speaknow").onclick = () => {
+            const text = document.getElementById("tts").value;
+            fetch("/api/tts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const audio = new Audio(data.audio_path);
+                    audio.play();
+                });
+        };
+
+        document.getElementById("showtext").onclick = () => {
+            const formData = new FormData();
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'audio/*';
+            fileInput.onchange = () => {
+                formData.append("audio", fileInput.files[0]);
+                fetch("/api/stt", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById("stt").value = data.text;
+                    });
+            };
+            fileInput.click();
+        };
+    </script>
+
+
+
+
+
+
+
+</body>
+
+</html>
